@@ -1,0 +1,54 @@
+{
+  "name": "react-confine",
+  "version": "0.0.1",
+  "description": "React plugin for editing confine configurations (simple JSON schema)",
+  "main": "lib/confine.jsx",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "confine": "^1.3.0",
+    "lodash": "^3.2.0",
+    "react": "^0.12.2"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.3",
+    "chai": "^2.0.0",
+    "confine": "^1.2.0",
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.5",
+    "jsdom": "^3.1.1",
+    "mocha": "^2.1.0",
+    "normalize-css": "^2.3.1",
+    "reactify": "^1.0.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "build:demo": "browserify -t reactify demo/script.jsx -o demo/build/script.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brandonhorst/react-confine.git"
+  },
+  "keywords": [
+    "react",
+    "confine",
+    "config",
+    "configuration",
+    "configure",
+    "gui",
+    "automatic",
+    "generation",
+    "autogenerate",
+    "json",
+    "schema",
+    "jsonschema",
+    "json-schema"
+  ],
+  "author": "@brandonhorst",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brandonhorst/react-confine/issues"
+  },
+  "homepage": "https://github.com/brandonhorst/react-confine"
+}
