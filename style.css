@@ -1,0 +1,38 @@
+.page > div, .page > textarea {
+  display: inline-block;
+  width: 45%;
+}
+
+.page > textarea {
+  height: 800px;
+}
+
+.invalid > label > input {
+  background-color: #FCC;
+}
+
+textarea {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.array > fieldset > div > div {
+  display: inline-block;
+}
+
+.properties > div {
+  margin: 5px 0;
+}
+
+label > span {
+  display: block;
+  font-weight: bold;
+}
+
+legend {
+  font-weight: bold;
+}
+
+label > input, label > select {
+  width: 300px;
+  margin-bottom: 10px;
+}
