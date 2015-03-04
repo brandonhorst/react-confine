@@ -1,5 +1,6 @@
 var _ = require('lodash')
 var React = require('react/addons')
+var SimpleWrapper = require('../other/wrappers').Simple
 
 function filterFloat (value) {
   if (/^(\-|\+)?([0-9]+?(\.[0-9]+)?(e(\-|\+)[0-9]+)?)$/.test(value)) return Number(value)
@@ -24,10 +25,9 @@ var NumberView = React.createClass({
   },
   render: function () {
     return (
-      <label>
-        {this.props.title}
+      <SimpleWrapper title={this.props.title} description={this.props.description}>
         <input type='number' min={this.props.schema.min} max={this.props.schema.max} value={this.props.value} onChange={this.change} placeholder={this.props.schema.default} />
-      </label>
+      </SimpleWrapper>
     )
   }
 })

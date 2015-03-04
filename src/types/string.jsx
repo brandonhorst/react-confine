@@ -1,9 +1,10 @@
 var _ = require('lodash')
 var React = require('react/addons')
+var SimpleWrapper = require('../other/wrappers').Simple
 
 var StringView = React.createClass({
   change: function (event) {
-    this.props.onChange(event.target.value.length ? event.target.value : null)
+    this.props.onChange(event.target.value.length ? event.target.value : undefined)
   },
   render: function () {
     var self = this
@@ -20,10 +21,9 @@ var StringView = React.createClass({
     }
 
     return (
-      <label>
-        {this.props.title}
+      <SimpleWrapper title={this.props.title} description={this.props.description}>
         {input}
-      </label>
+      </SimpleWrapper>
     )
   }
 })

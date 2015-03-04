@@ -1,6 +1,6 @@
 var Confine = require('confine')
 var React = require('react/addons')
-var ReactConfine = require('..')
+var ReactConfine = require('../..')
 
 var schema = {
   type: 'object',
@@ -76,7 +76,7 @@ var Page = React.createClass({
   render: function () {
     return (
       <div className='page'>
-        <ReactConfine confine={confine} schema={this.props.schema} defaultValue={this.state.value} onChange={this.change} />
+        <ReactConfine confine={confine} schema={this.props.schema} value={this.state.value} onChange={this.change} />
         <JSONView value={this.state.value} />
       </div>
     )

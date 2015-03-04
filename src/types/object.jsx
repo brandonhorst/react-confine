@@ -1,5 +1,6 @@
 var _ = require('lodash')
 var React = require('react/addons')
+var ComplexWrapper = require('../other/wrappers').Complex
 
 var ObjectView = React.createClass({
   render: function () {
@@ -19,10 +20,9 @@ var ObjectView = React.createClass({
     })
 
     return (
-      <fieldset className='properties'>
-        <legend>{this.props.title}</legend>
+      <ComplexWrapper title={this.props.title} description={this.props.description}>
         {propComponents}
-      </fieldset>
+      </ComplexWrapper>
     )
   }
 })
