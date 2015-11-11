@@ -1,22 +1,20 @@
 var _ = require('lodash')
-var React = require('react/addons')
-var ComplexWrapper = require('../other/wrappers').Complex
+var React = require('react')
+import {ComplexWrapper} from '../other/wrappers'
 
-var ObjectView = React.createClass({
-  render: function () {
-    var self = this
+export default class ObjectView extends React.Component {
+  render () {
     var trueValue = _.isPlainObject(this.props.value) ? this.props.value : {}
-    var propComponents = _.map(this.props.schema.properties, function (schema, propName) {
-      function onChange (newChildValue) {
-        var updater = {}
-        updater[propName] = {'$set': newChildValue}
+    var propComponents = _.map(this.props.schema.properties, (schema, propName) => {
+      const onChange = newChildValue => {
+        const newValue = _.assign({}, trueValue, {[propName]: newChildValue})
 
-        var newValue = React.addons.update(trueValue, updater)
-        self.props.onChange(newValue)
+        this.props.onChange(newValue)
       }
-      return <self.props.utils.Element key={propName} schema={schema}
+
+      return <this.props.utils.Element key={propName} schema={schema}
         value={trueValue[propName]} onChange={onChange}
-        propName={propName} utils={self.props.utils} />
+        propName={propName} utils={this.props.utils} />
     })
 
     return (
@@ -25,6 +23,4 @@ var ObjectView = React.createClass({
       </ComplexWrapper>
     )
   }
-})
-
-module.exports = ObjectView
+}

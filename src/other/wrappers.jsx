@@ -1,7 +1,7 @@
-var React = require('react/addons')
+var React = require('react')
 
-var SimpleWrapper = React.createClass({
-  render: function () {
+export class SimpleWrapper extends React.Component {
+  render () {
     return (
       <label>
         {this.props.title ? <span className='title'>{this.props.title}</span> : null}
@@ -10,10 +10,10 @@ var SimpleWrapper = React.createClass({
       </label>
     )
   }
-})
+}
 
-var ComplexWrapper = React.createClass({
-  render: function () {
+export class ComplexWrapper extends React.Component {
+  render () {
     return (
       <fieldset>
         {this.props.title ? <legend className='title'>{this.props.title}</legend> : null}
@@ -22,9 +22,4 @@ var ComplexWrapper = React.createClass({
       </fieldset>
     )
   }
-})
-
-module.exports = {
-  Simple: SimpleWrapper,
-  Complex: ComplexWrapper
 }

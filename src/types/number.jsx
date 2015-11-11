@@ -1,6 +1,6 @@
 var _ = require('lodash')
-var React = require('react/addons')
-var SimpleWrapper = require('../other/wrappers').Simple
+var React = require('react')
+import {SimpleWrapper} from '../other/wrappers'
 
 function filterFloat (value) {
   if (/^(\-|\+)?([0-9]+?(\.[0-9]+)?(e(\-|\+)[0-9]+)?)$/.test(value)) return Number(value)
@@ -12,8 +12,8 @@ function filterInt (value) {
   return NaN;
 }
 
-var NumberView = React.createClass({
-  change: function (event) {
+export default class NumnerView extends React.Component {
+  change (event) {
     var filter = this.props.schema.type === 'integer' ? filterInt : filterFloat
     var numVal = filter(event.target.value)
 
@@ -22,14 +22,13 @@ var NumberView = React.createClass({
     } else {
       this.props.onChange(numVal)
     }
-  },
-  render: function () {
+  }
+
+  render () {
     return (
       <SimpleWrapper title={this.props.title} description={this.props.description}>
-        <input type='number' min={this.props.schema.min} max={this.props.schema.max} value={this.props.value} onChange={this.change} placeholder={this.props.schema.default} />
+        <input type='number' min={this.props.schema.min} max={this.props.schema.max} value={this.props.value} onChange={this.change.bind(this)} placeholder={this.props.schema.default} />
       </SimpleWrapper>
     )
   }
-})
-
-module.exports = NumberView
+}

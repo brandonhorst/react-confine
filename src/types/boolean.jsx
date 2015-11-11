@@ -1,17 +1,17 @@
-var React = require('react/addons')
-var SimpleWrapper = require('../other/wrappers').Simple
+var React = require('react')
+import {SimpleWrapper} from '../other/wrappers'
 
-var BooleanView = React.createClass({
-  change: function (event) {
+
+export default class BooleanView extends React.Component {
+  change (event) {
     this.props.onChange(event.target.checked)
-  },
-  render: function () {
+  }
+
+  render () {
     return (
       <SimpleWrapper title={this.props.title} description={this.props.description}>
-        <input type='checkbox' checked={this.props.value != null ? this.props.value : this.props.schema.default} onChange={this.change} />
+        <input type='checkbox' checked={this.props.value != null ? this.props.value : this.props.schema.default} onChange={this.change.bind(this)} />
       </SimpleWrapper>
     )
   }
-})
-
-module.exports = BooleanView
+}

@@ -1,8 +1,9 @@
-var Confine = require('confine')
-var React = require('react/addons')
-var ReactConfine = require('../..')
+import Confine from 'confine'
+import React from 'react'
+import {render} from 'react-dom'
+import ReactConfine from '../..'
 
-var schema = {
+const schema = {
   type: 'object',
   properties: {
     name: {type: 'string'},
@@ -14,7 +15,8 @@ var schema = {
     alterEgos: {
       type: 'array',
       items: {
-        type: 'string'
+        type: 'string',
+        default: ''
       }
     },
     teams: {
@@ -44,7 +46,7 @@ var schema = {
   }
 }
 
-var object = {
+const object = {
   name: 'Peter Parker',
   age: 17,
   income: 38123.52,
@@ -56,31 +58,32 @@ var object = {
   ]
 }
 
-var confine = new Confine()
+const confine = new Confine()
 
-var JSONView = React.createClass({
+const JSONView = React.createClass({
   render: function () {
     return <textarea readOnly='true' value={JSON.stringify(this.props.value, null, 2)} />
   }
 })
 
-var Page = React.createClass({
-  getInitialState: function () {
-    return {value: this.props.value}
-  },
-  change: function (newValue) {
-    this.setState({
-      value: newValue
-    })
-  },
-  render: function () {
+class Page extends React.Component {
+  constructor ({value}) {
+    super()
+    this.state = {value}
+  }
+
+  change (value) {
+    this.setState({value})
+  }
+
+  render () {
     return (
       <div className='page'>
-        <ReactConfine confine={confine} schema={this.props.schema} value={this.state.value} onChange={this.change} />
+        <ReactConfine confine={confine} schema={this.props.schema} value={this.state.value} onChange={this.change.bind(this)} />
         <JSONView value={this.state.value} />
       </div>
     )
   }
-})
+}
 
-React.render(<Page value={object} schema={schema} />, document.body)
+render(<Page value={object} schema={schema} />, document.getElementById('demo'))

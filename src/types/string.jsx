@@ -1,23 +1,23 @@
-var _ = require('lodash')
-var React = require('react/addons')
-var SimpleWrapper = require('../other/wrappers').Simple
+import _ from 'lodash'
+import React from 'react'
+import {SimpleWrapper} from '../other/wrappers'
 
-var StringView = React.createClass({
-  change: function (event) {
+export default class StringView extends React.Component {
+  change (event) {
     this.props.onChange(event.target.value.length ? event.target.value : undefined)
-  },
-  render: function () {
-    var self = this
+  }
+
+  render () {
     var input
     if (this.props.schema.enum) {
       var options = this.props.schema.default ? [] : [<option key='' value='' />]
 
-      options = options.concat(_.map(this.props.schema.enum, function (enumOption) {
+      options = options.concat(_.map(this.props.schema.enum, (enumOption) => {
         return <option key={enumOption} value={enumOption}>{enumOption}</option>
       }))
-      input = <select value={this.props.value} onChange={this.change}>{options}</select>
+      input = <select value={this.props.value} onChange={this.change.bind(this)}>{options}</select>
     } else {
-      input = <input type='text' placeholder={this.props.schema.default} value={this.props.value} onChange={this.change} />
+      input = <input type='text' placeholder={this.props.schema.default} value={this.props.value} onChange={this.change.bind(this)} />
     }
 
     return (
@@ -26,6 +26,4 @@ var StringView = React.createClass({
       </SimpleWrapper>
     )
   }
-})
-
-module.exports = StringView
+}

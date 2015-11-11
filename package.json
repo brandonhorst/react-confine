@@ -8,23 +8,24 @@
   },
   "dependencies": {
     "confine": "^3.0.3",
-    "lodash": "^3.3.1",
-    "react": "^0.12.2"
+    "lodash": "^3.10.1",
+    "react": "^0.14.2"
   },
   "devDependencies": {
-    "babel": "^4.6.6",
-    "babelify": "^5.0.3",
-    "browserify": "^9.0.3",
-    "chai": "^2.1.0",
-    "jsdom": "^4.0.1",
-    "mocha": "^2.1.0",
+    "babel": "^5.8.29",
+    "babelify": "^6.4.0",
+    "browserify": "^12.0.1",
+    "chai": "^3.4.1",
+    "jsdom": "^7.0.2",
+    "mocha": "^2.3.3",
     "normalize-css": "^2.3.1",
-    "rimraf": "^2.3.0"
+    "react-dom": "^0.14.2",
+    "rimraf": "^2.4.3"
   },
   "scripts": {
     "test": "mocha --compilers jsx:babel/register",
-    "prepublish": "npm run clean && npm run build && npm run demo:build",
-    "demo:build": " mkdir -p demo/build && npm run build && cp demo/src/index.html demo/build && cp demo/src/style.css demo/build && browserify -t babelify demo/src/script.jsx -o demo/build/script.js",
+    "prepublish": "npm run clean && npm run build",
+    "demo:build": " mkdir -p demo/build && cp demo/src/index.html demo/build && cp demo/src/style.css demo/build && browserify -t babelify demo/src/script.jsx -o demo/build/script.js",
     "demo": "npm run demo:build && open demo/build/index.html",
     "build": "babel src --out-dir lib",
     "clean": "rimraf lib demo/build"

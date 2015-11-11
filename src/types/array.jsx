@@ -1,35 +1,33 @@
 var _ = require('lodash')
-var React = require('react/addons')
-var ComplexWrapper = require('../other/wrappers').Complex
+var React = require('react')
+import {ComplexWrapper} from '../other/wrappers'
 
-var ArrayView = React.createClass({
-  insert: function () {
+export default class ArrayView extends React.Component {
+  insert () {
     var newValue = this.props.utils.confine.normalize(undefined, this.props.schema.items)
     var trueValue = _.isArray(this.props.value) ? this.props.value : []
     this.props.onChange(trueValue.concat([newValue]))
-  },
-  render: function () {
-    var self = this
+  }
+
+  render () {
     var trueValue = _.isArray(this.props.value) ? this.props.value : []
 
-    var itemComponents = _.chain(0).range(trueValue.length).map(function (i) {
-      function onChange(newChildValue) {
-        var updater = {$splice: [[i, 1, newChildValue]]}
-        var newValue = React.addons.update(trueValue, updater)
-        self.props.onChange(newValue)
+    var itemComponents = _.chain(0).range(trueValue.length).map(i => {
+      const onChange = newChildValue => {
+        const newValue = _.assign([], trueValue, {[i]: newChildValue})
+        this.props.onChange(newValue)
       }
 
-      function onDelete() {
-        var updater = {$splice: [[i, 1]]}
-        var newValue = React.addons.update(trueValue, updater)
-        self.props.onChange(newValue)
+      const onDelete = () => {
+        const newValue = _.slice(trueValue, 0, i).concat(_.slice(trueValue, i+1))
+        this.props.onChange(newValue)
       }
 
       return (
         <div key={i}>
-          <self.props.utils.Element schema={self.props.schema.items}
+          <this.props.utils.Element schema={this.props.schema.items}
             value={trueValue[i]} onChange={onChange}
-            utils={self.props.utils} />
+            utils={this.props.utils} />
           <button onClick={onDelete} className='close-button'>×</button>
         </div>
       )
@@ -38,10 +36,8 @@ var ArrayView = React.createClass({
     return (
       <ComplexWrapper title={this.props.title} description={this.props.description}>
         {itemComponents}
-        <button onClick={this.insert} className='add-button'>+</button>
+        <button onClick={this.insert.bind(this)} className='add-button'>+</button>
       </ComplexWrapper>
     )
   }
-})
-
-module.exports = ArrayView
+}
