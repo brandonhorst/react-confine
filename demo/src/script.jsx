@@ -1,7 +1,7 @@
 import Confine from 'confine'
 import React from 'react'
 import {render} from 'react-dom'
-import ReactConfine from '../..'
+import {ConfineView} from '../..'
 
 const schema = {
   type: 'object',
@@ -60,11 +60,9 @@ const object = {
 
 const confine = new Confine()
 
-const JSONView = React.createClass({
-  render: function () {
-    return <textarea readOnly='true' value={JSON.stringify(this.props.value, null, 2)} />
-  }
-})
+function JSONView (props) {
+  return <textarea readOnly='true' value={JSON.stringify(props.value, null, 2)} />
+}
 
 class Page extends React.Component {
   constructor ({value}) {
@@ -79,7 +77,7 @@ class Page extends React.Component {
   render () {
     return (
       <div className='page'>
-        <ReactConfine confine={confine} schema={this.props.schema} value={this.state.value} onChange={this.change.bind(this)} />
+        <ConfineView confine={confine} schema={this.props.schema} value={this.state.value} onChange={this.change.bind(this)} />
         <JSONView value={this.state.value} />
       </div>
     )

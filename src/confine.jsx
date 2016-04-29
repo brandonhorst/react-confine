@@ -1,18 +1,18 @@
-var _ = require('lodash')
-var Confine = require('confine')
-var React = require('react')
-var ElementView = require('./element')
+import _ from 'lodash'
+import Confine from 'confine'
+import React from 'react'
+import ElementView from './element'
 
 var typeComponents = {
-  array: require('./types/array'),
-  boolean: require('./types/boolean'),
-  integer: require('./types/number'),
-  number: require('./types/number'),
-  object: require('./types/object'),
-  string: require('./types/string')
+  array: require('./types/array').default,
+  boolean: require('./types/boolean').default,
+  integer: require('./types/number').default,
+  number: require('./types/number').default,
+  object: require('./types/object').default,
+  string: require('./types/string').default
 }
 
-export default class ConfineView extends React.Component {
+export class ConfineView extends React.Component {
   change (newValue) {
     this.props.onChange(this.props.confine.normalize(newValue, this.props.schema))
   }
@@ -32,3 +32,5 @@ export default class ConfineView extends React.Component {
 ConfineView.defaultProps = {
   customTypes: {}
 }
+
+export {SimpleWrapper, ComplexWrapper} from './other/wrappers'

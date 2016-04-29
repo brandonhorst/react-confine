@@ -1,25 +1,35 @@
-var React = require('react')
+import React from 'react'
 
 export class SimpleWrapper extends React.Component {
   render () {
-    return (
-      <label>
-        {this.props.title ? <span className='title'>{this.props.title}</span> : null}
-        {(this.props.title && this.props.description) ? <span className='description'>{this.props.description}</span> : null}
-        {this.props.children}
-      </label>
-    )
+    if (this.props.label) {
+      return (
+        <label {...this.props.events} className={`${this.props.className} format-${this.props.format}`}>
+          {this.props.title ? <div className='title'>{this.props.title}</div> : null}
+          {this.props.children}
+          {(this.props.title && this.props.description) ? <div className='description'>{this.props.description}</div> : null}
+        </label>
+      )
+    } else {
+      return <div {...this.props.events}>{this.props.children}</div>
+    }
   }
 }
 
 export class ComplexWrapper extends React.Component {
   render () {
-    return (
-      <fieldset>
-        {this.props.title ? <legend className='title'>{this.props.title}</legend> : null}
-        {(this.props.title && this.props.description) ? <span className='description'>{this.props.description}</span> : null}
-        {this.props.children}
-      </fieldset>
-    )
+    if (this.props.label) {
+      return (
+        <fieldset className={`${this.props.className} format-${this.props.format}`}>
+          {this.props.title ? <legend className='title'>{this.props.title}</legend> : null}
+          {(this.props.title && this.props.description)
+            ? <div className='description'>{this.props.description}</div>
+            : null}
+          {this.props.children}
+        </fieldset>
+      )
+    } else {
+      return <div className={this.props.className}>{this.props.children}</div>
+    }
   }
 }

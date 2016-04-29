@@ -1,11 +1,11 @@
-var _ = require('lodash')
-var React = require('react')
+import React from 'react'
+import { getTitle } from './utils'
 
 // Cannot yet handle custom types
 export default class ElementView extends React.Component {
   validate () {
     return (
-      (this.props.schema.default && _.isUndefined(this.props.value)) ||
+      (this.props.schema.default && this.props.value == null) ||
       this.props.utils.confine.validate(this.props.value, this.props.schema)
     )
   }
@@ -16,16 +16,26 @@ export default class ElementView extends React.Component {
     }
 
     var TypeComponent = this.props.utils.types[this.props.schema.type]
-    var title = this.props.schema.title || _.startCase(this.props.propName)
+    var title = getTitle(this.props.schema, this.props.propName)
     var valid = this.validate()
-
-    return (
-      <div className={this.props.schema.type + (valid ? '' : ' invalid')}>
-          <TypeComponent schema={this.props.schema} valid={valid} title={title}
-            description={this.props.schema.description}
-            onChange={this.props.onChange} value={this.props.value}
-            utils={this.props.utils}/>
-      </div>
-    )
+    
+    return <TypeComponent
+      value={this.props.value}
+      events={this.props.events}
+      label={this.props.label}
+      utils={this.props.utils}
+      schema={this.props.schema}
+      title={title}
+      description={this.props.schema.description}
+      valid={valid}
+      readOnly={this.props.readOnly}
+      onChange={this.props.onChange}
+      format={this.props.schema.format || 'default'} />
   }
+}
+
+ElementView.defaultProps = {
+  label: true,
+  readOnly: false,
+  events: {}
 }

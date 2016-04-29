@@ -1,5 +1,5 @@
-var _ = require('lodash')
-var React = require('react')
+import _ from 'lodash'
+import React from 'react'
 import {SimpleWrapper} from '../other/wrappers'
 
 function filterFloat (value) {
@@ -26,7 +26,7 @@ export default class NumnerView extends React.Component {
 
   render () {
     return (
-      <SimpleWrapper title={this.props.title} description={this.props.description}>
+      <SimpleWrapper title={this.props.title} description={this.props.description} className='number' format={this.props.format} label={this.props.label}>
         <input type='number' min={this.props.schema.min} max={this.props.schema.max} value={this.props.value} onChange={this.change.bind(this)} placeholder={this.props.schema.default} />
       </SimpleWrapper>
     )
