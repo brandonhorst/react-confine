@@ -4,7 +4,10 @@ import {SimpleWrapper} from '../other/wrappers'
 
 export default class StringView extends React.Component {
   change (event) {
-    this.props.onChange(event.target.value.length ? event.target.value : undefined)
+    this.props.onChange(event.target.value.length
+      ? event.target.value
+      : this.props.schema.default
+    )
   }
 
   render () {
@@ -25,7 +28,7 @@ export default class StringView extends React.Component {
           type='text'
           placeholder={this.props.schema.default}
           value={this.props.value}
-          onChange={this.change.bind(this)} />
+          onInput={this.change.bind(this)} />
       }
     }
 

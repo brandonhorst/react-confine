@@ -23,8 +23,9 @@ const schema = {
       type: 'array',
       items: {
         type: 'string',
-        default: 'The Avengers'
-      }
+        default: ''
+      },
+      default: ['The Avengers']
     },
     powers: {
       type: 'array',
