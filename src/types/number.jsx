@@ -12,13 +12,13 @@ function filterInt (value) {
   return NaN;
 }
 
-export default class NumnerView extends React.Component {
+export default class NumberView extends React.Component {
   change (event) {
     var filter = this.props.schema.type === 'integer' ? filterInt : filterFloat
     var numVal = filter(event.target.value)
 
     if (Number.isNaN(numVal)) {
-      this.props.onChange(event.target.value)
+      this.props.onChange(event.target.value === '' ? undefined : event.target.value)
     } else {
       this.props.onChange(numVal)
     }
@@ -26,8 +26,18 @@ export default class NumnerView extends React.Component {
 
   render () {
     return (
-      <SimpleWrapper title={this.props.title} description={this.props.description} className='number' format={this.props.format} label={this.props.label}>
-        <input type='number' min={this.props.schema.min} max={this.props.schema.max} value={this.props.value} onChange={this.change.bind(this)} placeholder={this.props.schema.default} />
+      <SimpleWrapper
+        title={this.props.title}
+        description={this.props.description}
+        className={`number ${this.props.readOnly ? 'readonly' : ''} ${this.props.valid ? 'valid' : 'invalid'}`}
+        format={this.props.format}
+        label={this.props.label}>
+        <input type='number'
+          min={this.props.schema.min}
+          max={this.props.schema.max}
+          value={this.props.value || ''}
+          onChange={this.change.bind(this)}
+          placeholder={this.props.schema.default} />
       </SimpleWrapper>
     )
   }

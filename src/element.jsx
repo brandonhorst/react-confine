@@ -1,11 +1,10 @@
 import React from 'react'
 import { getTitle } from './utils'
 
-// Cannot yet handle custom types
 export default class ElementView extends React.Component {
   validate () {
     return (
-      (this.props.schema.default && this.props.value == null) ||
+      (!_.isUndefined(this.props.schema.default) && this.props.value == null) ||
       this.props.utils.confine.validate(this.props.value, this.props.schema)
     )
   }

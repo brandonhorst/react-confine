@@ -7,7 +7,6 @@ export default class ObjectView extends React.Component {
     const newValue = _.assign({}, this.props.value, {[propName]: newChildValue})
 
     this.props.onChange(newValue)
-
   }
 
   render () {

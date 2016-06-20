@@ -21,9 +21,15 @@ export default class ArrayView extends React.Component {
   itemIsObject () {
     return this.props.schema.items.type === 'object'
   }
+
+  trueValue () {
+    return this.props.value || this.props.schema.default || []
+  }
   
   insert () {
-    const newIndex = this.props.value.length
+    const value = this.trueValue()
+    const newIndex = value.length
+
     if (this.itemIsObject()) {
       const firstKey = _.keys(this.props.schema.items.properties)[0]
       this.setState({
@@ -37,29 +43,33 @@ export default class ArrayView extends React.Component {
       })
     }
 
-    const newValue = this.props.utils.confine.normalize(undefined, this.props.schema.items)
-    this.props.onChange(this.props.value.concat([newValue]))
+    // The map with identity converts array-like objects into actual arrays
+    const newValue = _.chain(value).map(_.identity).concat(undefined).value()
+    this.props.onChange(newValue)
   }
 
   change (index, key, newChildValue) {
     let result
+    const value = this.trueValue()
     if (this.itemIsObject()) {
-      const newValue = _.assign({}, this.props.value[index], {[key]: newChildValue})
-      result = _.assign([], this.props.value, {[index]: newValue})
+      const newValue = _.assign({}, value[index], {[key]: newChildValue})
+      result = _.assign([], value, {[index]: newValue})
     } else {
-      result = _.assign([], this.props.value, {[index]: newChildValue})
+      result = _.assign([], value, {[index]: newChildValue})
     }
     this.props.onChange(result)
   }
 
   delete (index) {
-    const newValue = _.slice(this.props.value, 0, index).concat(_.slice(this.props.value, index + 1))
+    const value = this.trueValue()
+    const newValue = _.slice(value, 0, index).concat(_.slice(value, index + 1))
     this.props.onChange(newValue)
   }
 
   dragStart (index, e) {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('confine/item', JSON.stringify(this.props.value[index]));
+    const value = this.trueValue()
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('confine/item', JSON.stringify(value[index]))
 
     //dummy node
     this.dummyNode = e.currentTarget.cloneNode(true)
@@ -73,7 +83,8 @@ export default class ArrayView extends React.Component {
 
   dragEnd (e) {
     if (this.state.hoverOver != null) {
-      const data = _.clone(this.props.value)
+      const value = this.trueValue()
+      const data = _.clone(value)
       const from = this.state.dragging
       const to = this.state.hoverOver + (this.state.hoverPosition === 'top' ? 0 : 1)
       const index = from < to ? to - 1 : to
@@ -139,29 +150,33 @@ export default class ArrayView extends React.Component {
   }
 
   keyDown (event) {
+    const value = this.trueValue
     if (this.state.selection != null) {
       if (event.keyCode === 38) { // up
         this.select(Math.max(this.state.selection - 1, 0))
         event.preventDefault()
       } else if (event.keyCode === 40) { // down
-        this.select(Math.min(this.state.selection + 1, this.props.value.length - 1))
+        this.select(Math.min(this.state.selection + 1, value.length - 1))
         event.preventDefault()
       }
     }
   }
 
   render () {
-    const trueValue = _.isArray(this.props.value) ? this.props.value : []
+    const trueValue = this.trueValue()
     const items = _.map(trueValue, (value, i) => {
       let liChildren
       if (this.props.schema.items.type === 'object') {
         liChildren = _.map(this.props.schema.items.properties, (prop, key) => {
-          return <this.props.utils.Element schema={prop} key={i + key}
+          return <this.props.utils.Element
+            schema={prop}
+            key={i + key}
             events={{
               onDoubleClick: this.makeWritable.bind(this, i, key),
               onKeyDown: this.checkTab.bind(this, i, key)
             }}
-            value={value[key]} onChange={this.change.bind(this, i, key)}
+            value={value ? value[key] : undefined}
+            onChange={this.change.bind(this, i, key)}
             label={false}
             readOnly={!_.isEqual(this.state.writable, {index: i, key})}
             utils={this.props.utils} />
@@ -183,8 +198,10 @@ export default class ArrayView extends React.Component {
         <li key={i}
           className={`array-item${this.state.selection === i ? ' selected' : ''}${this.state.hoverOver === i ? ` hover-${this.state.hoverPosition}` : ''}`}
           onClick={this.select.bind(this, i)}
-          draggable onDragStart={this.dragStart.bind(this, i)}
-          onDragEnd={this.dragEnd.bind(this)} onDragOver={this.dragOver.bind(this, i)}>
+          draggable
+          onDragStart={this.dragStart.bind(this, i)}
+          onDragEnd={this.dragEnd.bind(this)}
+          onDragOver={this.dragOver.bind(this, i)}>
           {liChildren}
         </li>
       )
@@ -203,9 +220,7 @@ export default class ArrayView extends React.Component {
       <ComplexWrapper title={this.props.title} description={this.props.description} className='array' format={this.props.format} label>
         <div className='array-contents'>
           <div className='array-headers'>{headers}</div>
-          <ul className='array-items'>
-            {items}
-          </ul>
+          <ul className='array-items'>{items}</ul>
         </div>
         <div className='array-buttons'>
           <button onClick={this.insert.bind(this)} className='array-add-button'>+</button>

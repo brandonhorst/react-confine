@@ -14,7 +14,7 @@ var typeComponents = {
 
 export class ConfineView extends React.Component {
   change (newValue) {
-    this.props.onChange(this.props.confine.normalize(newValue, this.props.schema))
+    this.props.onChange(newValue)
   }
 
   render () {

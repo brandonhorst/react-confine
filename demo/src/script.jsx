@@ -8,7 +8,7 @@ const schema = {
   properties: {
     name: {type: 'string'},
     age: {type: 'integer', min: 0, max: 120},
-    income: {type: 'number', min: 0},
+    income: {type: 'number', min: 0, default: 50000},
     universe: {type: 'string', enum: ['Marvel', 'DC']},
     identity: {type: 'string', enum: ['secret', 'public', 'complicated'], default: 'secret'},
     living: {type: 'boolean', default: true},
@@ -79,7 +79,7 @@ class Page extends React.Component {
     return (
       <div className='page'>
         <ConfineView confine={confine} schema={this.props.schema} value={this.state.value} onChange={this.change.bind(this)} />
-        <JSONView value={this.state.value} />
+        <JSONView value={confine.normalize(this.state.value, this.props.schema)} />
       </div>
     )
   }
