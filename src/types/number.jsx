@@ -31,7 +31,8 @@ export default class NumberView extends React.Component {
         description={this.props.description}
         className={`number ${this.props.readOnly ? 'readonly' : ''} ${this.props.valid ? 'valid' : 'invalid'}`}
         format={this.props.format}
-        label={this.props.label}>
+        label={this.props.label}
+        separatorBelow={this.props.schema.separatorBelow}>
         <input type='number'
           min={this.props.schema.min}
           max={this.props.schema.max}

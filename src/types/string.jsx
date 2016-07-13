@@ -19,33 +19,41 @@ export default class StringView extends React.Component {
           readOnly
           value={this.props.value || ''} />
       } else {
-        let options = this.props.schema.default ? [] : [<option key='' value='' />]
+        let options = this.props.schema.default
+          ? []
+          : [<option key='' value='' />]
 
-        options = options.concat(_.map(this.props.schema.enum, (enumOption) => {
-          return <option key={enumOption} value={enumOption}>{enumOption}</option>
+        options = options.concat(_.map(this.props.schema.enum, (enumOption, i) => {
+          const display = this.props.schema.enumDisplay
+            ? this.props.schema.enumDisplay[i]
+            : enumOption
+
+          return <option key={enumOption} value={enumOption}>{display}</option>
         }))
         
         input = <select
           autoFocus
-          value={this.props.value}
+          value={this.props.value || this.props.schema.default}
+          onFocus={this.props.events.onFocus}
           onChange={this.change.bind(this)}
-          readOnly={this.props.readOnly}>
+          disabled={this.props.readOnly}>
           {options}
         </select>
       }
     } else {
-      // if (this.props.readOnly) {
-      //   input = this.props.value
-      // } else {
+      if (this.props.readOnly) {
+        input = this.props.value
+      } else {
         input = <input
           autoFocus
           type='text'
           placeholder={this.props.schema.default}
-          readOnly={this.props.readOnly}
           value={this.props.value || ''}
+          onFocus={this.props.events.onFocus}
           onChange={this.change.bind(this)} />
-      // }
+      }
     }
+    // disabled={this.props.readOnly}
 
     return (
       <SimpleWrapper
@@ -53,8 +61,9 @@ export default class StringView extends React.Component {
         description={this.props.description}
         label={this.props.label}
         format={this.props.format}
-        events={this.props.events}
-        className={`string ${this.props.readOnly ? 'readonly' : ''} ${this.props.valid ? 'valid' : 'invalid'}`}>
+        events={_.omit(this.props.events, ['onFocus'])}
+        className={`string ${this.props.readOnly ? 'readonly' : ''} ${this.props.valid ? 'valid' : 'invalid'}`}
+        separatorBelow={this.props.schema.separatorBelow}>
         {input}
       </SimpleWrapper>
     )

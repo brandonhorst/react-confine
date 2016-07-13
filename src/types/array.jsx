@@ -1,7 +1,16 @@
 import _ from 'lodash'
 import React from 'react'
 import {ComplexWrapper} from '../other/wrappers'
+import {findDOMNode} from 'react-dom'
 import {getTitle} from '../utils'
+
+function handleFocus (e) {
+  const target = e.target
+  setTimeout(() => {
+    console.log(target)
+    target.select()
+  }, 0)
+}
 
 export default class ArrayView extends React.Component {
   constructor (props) {
@@ -113,11 +122,12 @@ export default class ArrayView extends React.Component {
 
   makeWritable (index, key) {
     if (this.itemIsObject()) {
-      this.setState({writable: {index, key}})
+      this.setState({writable: {index, key}, shouldSelectWritable: true})
     } else {
-      this.setState({writable: {index}})
+      this.setState({writable: {index}, shouldSelectWritable: false})
     }
   }
+
 
   checkTab (index, key, event) {
     if (event.keyCode === 9) { // tab
@@ -168,30 +178,41 @@ export default class ArrayView extends React.Component {
       let liChildren
       if (this.props.schema.items.type === 'object') {
         liChildren = _.map(this.props.schema.items.properties, (prop, key) => {
+          const events={
+            onClick: this.state.selection === i
+              ? this.makeWritable.bind(this, i, key)
+              : undefined,
+            onFocus: handleFocus,
+            onKeyDown: this.checkTab.bind(this, i, key)
+          }
+          const writable = _.isEqual(this.state.writable, {index: i, key})
           return <this.props.utils.Element
             schema={prop}
             key={i + key}
-            events={{
-              onDoubleClick: this.makeWritable.bind(this, i, key),
-              onKeyDown: this.checkTab.bind(this, i, key)
-            }}
+            events={events}
             value={value ? value[key] : undefined}
             onChange={this.change.bind(this, i, key)}
             label={false}
-            readOnly={!_.isEqual(this.state.writable, {index: i, key})}
+            readOnly={!writable}
             utils={this.props.utils} />
         })
       } else {
+        let ref
+        const events={
+          onClick: this.state.selection === i
+            ? this.makeWritable.bind(this, i, null)
+            : undefined,
+          onFocus: handleFocus,
+          onKeyDown: this.checkTab.bind(this, i, null)
+        }
+        const writable = _.isEqual(this.state.writable, {index: i})
         liChildren = <this.props.utils.Element
           schema={this.props.schema.items}
-          events={{
-            onDoubleClick: this.makeWritable.bind(this, i, null),
-            onKeyDown: this.checkTab.bind(this, i, null)
-          }}
+          events={events}
           value={value}
           onChange={this.change.bind(this, i, null)}
           label={false}
-          readOnly={!_.isEqual(this.state.writable, {index: i})}
+          readOnly={!writable}
           utils={this.props.utils} />
       }
       return (
@@ -221,10 +242,10 @@ export default class ArrayView extends React.Component {
         <div className='array-contents'>
           <div className='array-headers'>{headers}</div>
           <ul className='array-items'>{items}</ul>
-        </div>
-        <div className='array-buttons'>
-          <button onClick={this.insert.bind(this)} className='array-add-button'>+</button>
-          <button onClick={this.delete.bind(this, this.state.selection)} className='array-delete-button' disabled={this.state.selection == null}>−</button>
+          <div className='array-buttons'>
+            <button onClick={this.insert.bind(this)} className='array-add-button'>＋</button>
+            <button onClick={this.delete.bind(this, this.state.selection)} className='array-delete-button' disabled={this.state.selection == null}>－</button>
+          </div>
         </div>
       </ComplexWrapper>
     )

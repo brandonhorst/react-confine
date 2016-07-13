@@ -8,10 +8,16 @@ export class SimpleWrapper extends React.Component {
           {this.props.title ? <div className='title'>{this.props.title}</div> : null}
           {this.props.children}
           {(this.props.title && this.props.description) ? <div className='description'>{this.props.description}</div> : null}
+          {this.props.separatorBelow ? <hr /> : null}
         </label>
       )
     } else {
-      return <div {...this.props.events}>{this.props.children}</div>
+      return (
+        <div {...this.props.events}>
+          {this.props.children}
+          {this.props.separatorBelow ? <hr /> : null}
+        </div>
+      )
     }
   }
 }
