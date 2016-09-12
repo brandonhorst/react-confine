@@ -160,7 +160,7 @@ export default class ArrayView extends React.Component {
   }
 
   keyDown (event) {
-    const value = this.trueValue
+    const value = this.trueValue()
     if (this.state.selection != null) {
       if (event.keyCode === 38) { // up
         this.select(Math.max(this.state.selection - 1, 0))
