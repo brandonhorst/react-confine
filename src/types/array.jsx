@@ -4,14 +4,6 @@ import {ComplexWrapper} from '../other/wrappers'
 import {findDOMNode} from 'react-dom'
 import {getTitle} from '../utils'
 
-function handleFocus (e) {
-  const target = e.target
-  setTimeout(() => {
-    console.log(target)
-    target.select()
-  }, 0)
-}
-
 export default class ArrayView extends React.Component {
   constructor (props) {
     super(props)
@@ -20,11 +12,28 @@ export default class ArrayView extends React.Component {
   }
 
   componentDidMount () {
+    if (!window.__react_confine_arrays__) {
+      window.__react_confine_arrays__ = []
+    }
+    window.__react_confine_arrays__.push(this)
     document.addEventListener('keydown', this.keyDownBound)
   }
 
   componentWillUnmount () {
+    _.pull(window.__react_confine_arrays__, this)
     document.removeEventListener('keydown', this.keyDownBound)
+  }
+
+  unfocus () {
+    console.log('unfocusing')
+    this.setState({selection: null})
+  }
+
+  handleFocus (e) {
+    const target = e.target
+    setTimeout(() => {
+      target.select()
+    }, 0)
   }
 
   itemIsObject () {
@@ -154,6 +163,9 @@ export default class ArrayView extends React.Component {
   }
 
   select (index, event) {
+    const allArrays = _.without(window.__react_confine_arrays__, this)
+    _.forEach(allArrays, array => array.unfocus())
+
     if (this.state.selection !== index) {
       this.setState({selection: index, writable: undefined})
     }
@@ -182,7 +194,7 @@ export default class ArrayView extends React.Component {
             onClick: this.state.selection === i
               ? this.makeWritable.bind(this, i, key)
               : undefined,
-            onFocus: handleFocus,
+            onFocus: this.handleFocus.bind(this),
             onKeyDown: this.checkTab.bind(this, i, key)
           }
           const writable = _.isEqual(this.state.writable, {index: i, key})
@@ -202,7 +214,7 @@ export default class ArrayView extends React.Component {
           onClick: this.state.selection === i
             ? this.makeWritable.bind(this, i, null)
             : undefined,
-          onFocus: handleFocus,
+          onFocus: this.handleFocus.bind(this),
           onKeyDown: this.checkTab.bind(this, i, null)
         }
         const writable = _.isEqual(this.state.writable, {index: i})
