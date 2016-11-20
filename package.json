@@ -1,6 +1,6 @@
 {
   "name": "react-confine",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "React plugin for editing confine configurations (simple JSON schema)",
   "main": "lib/confine.js",
   "directories": {
