@@ -25,6 +25,7 @@ export default class ElementView extends React.Component {
       label={this.props.label}
       utils={this.props.utils}
       schema={this.props.schema}
+      className={this.props.className}
       title={title}
       description={this.props.schema.description}
       valid={valid}

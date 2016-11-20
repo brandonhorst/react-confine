@@ -14,10 +14,13 @@ export default class StringView extends React.Component {
     let input
     if (this.props.schema.enum) {
       if (this.props.readOnly) {
-        input = <input
-          type='text'
-          readOnly
-          value={this.props.value || ''} />
+        const value = this.props.value == null ? this.props.schema.default : this.props.value
+
+        const display = this.props.schema.enumDisplay
+          ? (this.props.schema.enumDisplay[_.indexOf(this.props.schema.enum, value)] || '')
+          : value
+          
+        input = display
       } else {
         let options = this.props.schema.default
           ? []
@@ -58,11 +61,12 @@ export default class StringView extends React.Component {
     return (
       <SimpleWrapper
         title={this.props.title}
+        utils={this.props.utils}
         description={this.props.description}
         label={this.props.label}
         format={this.props.format}
         events={_.omit(this.props.events, ['onFocus'])}
-        className={`string ${this.props.readOnly ? 'readonly' : ''} ${this.props.valid ? 'valid' : 'invalid'}`}
+        className={`string ${this.props.readOnly ? 'readonly' : ''} ${this.props.valid ? 'valid' : 'invalid'} ${this.props.className || ''}`}
         separatorBelow={this.props.schema.separatorBelow}>
         {input}
       </SimpleWrapper>

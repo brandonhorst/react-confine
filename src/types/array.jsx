@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
-import {ComplexWrapper} from '../other/wrappers'
+import {SimpleWrapper, ComplexWrapper} from '../other/wrappers'
 import {findDOMNode} from 'react-dom'
 import {getTitle} from '../utils'
 
@@ -25,7 +25,6 @@ export default class ArrayView extends React.Component {
   }
 
   unfocus () {
-    console.log('unfocusing')
     this.setState({selection: null})
   }
 
@@ -137,6 +136,15 @@ export default class ArrayView extends React.Component {
     }
   }
 
+  openSheet () {
+    this.setState({sheetVisible: true})
+    this.props.utils.extras.disable()
+  }
+
+  closeSheet () {
+    this.setState({sheetVisible: false})
+    this.props.utils.extras.reenable()
+  }
 
   checkTab (index, key, event) {
     if (event.keyCode === 9) { // tab
@@ -182,85 +190,137 @@ export default class ArrayView extends React.Component {
         event.preventDefault()
       }
     }
+
+    if (this.state.sheetVisible && event.keyCode === 27) { //esc
+      this.closeSheet()
+      event.preventDefault()
+    }
   }
 
   render () {
     const trueValue = this.trueValue()
-    const items = _.map(trueValue, (value, i) => {
-      let liChildren
-      if (this.props.schema.items.type === 'object') {
-        liChildren = _.map(this.props.schema.items.properties, (prop, key) => {
+    let items
+    if (trueValue.length === 0) {
+      items = (
+        <li className='array-item'>
+          No Entries...
+        </li>
+      )
+    } else {
+      items = _.map(trueValue, (value, i) => {
+        let liChildren
+        if (this.props.schema.items.type === 'object') {
+          liChildren = _.map(this.props.schema.items.properties, (prop, key) => {
+            const events={
+              onClick: this.state.selection === i
+                ? this.makeWritable.bind(this, i, key)
+                : undefined,
+              onFocus: this.handleFocus.bind(this),
+              onKeyDown: this.checkTab.bind(this, i, key)
+            }
+            const writable = _.isEqual(this.state.writable, {index: i, key})
+            return <this.props.utils.Element
+              schema={prop}
+              key={i + key}
+              className={`array-item-width-${prop.size}`}
+              events={events}
+              value={value ? value[key] : undefined}
+              onChange={this.change.bind(this, i, key)}
+              label={false}
+              readOnly={!writable}
+              utils={this.props.utils} />
+          })
+        } else {
+          let ref
           const events={
             onClick: this.state.selection === i
-              ? this.makeWritable.bind(this, i, key)
+              ? this.makeWritable.bind(this, i, null)
               : undefined,
             onFocus: this.handleFocus.bind(this),
-            onKeyDown: this.checkTab.bind(this, i, key)
+            onKeyDown: this.checkTab.bind(this, i, null)
           }
-          const writable = _.isEqual(this.state.writable, {index: i, key})
-          return <this.props.utils.Element
-            schema={prop}
-            key={i + key}
+          const writable = _.isEqual(this.state.writable, {index: i})
+          liChildren = <this.props.utils.Element
+            schema={this.props.schema.items}
             events={events}
-            value={value ? value[key] : undefined}
-            onChange={this.change.bind(this, i, key)}
+            className='array-item-width-16'
+            value={value}
+            onChange={this.change.bind(this, i, null)}
             label={false}
             readOnly={!writable}
             utils={this.props.utils} />
-        })
-      } else {
-        let ref
-        const events={
-          onClick: this.state.selection === i
-            ? this.makeWritable.bind(this, i, null)
-            : undefined,
-          onFocus: this.handleFocus.bind(this),
-          onKeyDown: this.checkTab.bind(this, i, null)
         }
-        const writable = _.isEqual(this.state.writable, {index: i})
-        liChildren = <this.props.utils.Element
-          schema={this.props.schema.items}
-          events={events}
-          value={value}
-          onChange={this.change.bind(this, i, null)}
-          label={false}
-          readOnly={!writable}
-          utils={this.props.utils} />
-      }
-      return (
-        <li key={i}
-          className={`array-item${this.state.selection === i ? ' selected' : ''}${this.state.hoverOver === i ? ` hover-${this.state.hoverPosition}` : ''}`}
-          onClick={this.select.bind(this, i)}
-          draggable
-          onDragStart={this.dragStart.bind(this, i)}
-          onDragEnd={this.dragEnd.bind(this)}
-          onDragOver={this.dragOver.bind(this, i)}>
-          {liChildren}
-        </li>
-      )
-    })
+        return (
+          <li key={i}
+            className={`array-item${this.state.selection === i ? ' selected' : ''}${this.state.hoverOver === i ? ` hover-${this.state.hoverPosition}` : ''}`}
+            onClick={this.select.bind(this, i)}
+            draggable
+            onDragStart={this.dragStart.bind(this, i)}
+            onDragEnd={this.dragEnd.bind(this)}
+            onDragOver={this.dragOver.bind(this, i)}>
+            {liChildren}
+          </li>
+        )
+      })
+    }
 
     let headers
     if (this.props.schema.items.type === 'object') {
       headers = _.map(this.props.schema.items.properties, (val, key) => {
-        return <div className='array-header' key={key} style={{width: `${val.size}%`}}>{getTitle(val, key)}</div>
+        return <div className={`array-header array-item-width-${val.size}`} key={key}>{getTitle(val, key)}</div>
       })
     } else {
-      headers = <div className='array-header'>{this.props.schema.items.title}</div>
+      headers = <div className='array-header array-item-width-16'>{this.props.schema.items.title}</div>
     } 
 
-    return (
-      <ComplexWrapper title={this.props.title} description={this.props.description} className='array' format={this.props.format} label>
+    const fullArray = (
+      <ComplexWrapper
+        title={this.props.title}
+        description={this.props.description}
+        className='array'
+        utils={this.props.utils}
+        format={this.props.format}
+        label>
         <div className='array-contents'>
           <div className='array-headers'>{headers}</div>
           <ul className='array-items'>{items}</ul>
-          <div className='array-buttons'>
-            <button onClick={this.insert.bind(this)} className='array-add-button'>＋</button>
-            <button onClick={this.delete.bind(this, this.state.selection)} className='array-delete-button' disabled={this.state.selection == null}>－</button>
-          </div>
+        </div>
+        <div className='array-buttons'>
+          <button onClick={this.insert.bind(this)} className='array-add-button'>＋</button>
+          <button onClick={this.delete.bind(this, this.state.selection)} className='array-delete-button' disabled={this.state.selection == null}>－</button>
         </div>
       </ComplexWrapper>
     )
+
+    if (this.props.schema.sheet) {
+      let buttonTitle = `${this.props.title}...`
+      let buttonLabel = ''
+      if (this.props.schema.buttonFormat === 'count') {
+        const count = trueValue.length
+        buttonTitle = count === 1 ? '1 Item...' : `${count} Items...`
+        buttonLabel = this.props.title
+      }
+      return (
+        <div>
+          <div className={`sheet ${this.state.sheetVisible ? 'visible' : ''}`}>
+            {fullArray}
+            <button className='sheet-close-button' onClick={this.closeSheet.bind(this)}>Done</button>
+          </div>
+          <SimpleWrapper
+            buttonMode
+            description={this.props.schema.buttonDescription}
+            utils={this.props.utils}
+            className='sheet-button'
+            label={this.props.label}
+            title={buttonLabel}
+            separatorBelow={this.props.schema.separatorBelow}>
+            <button className='sheet-button' onClick={this.openSheet.bind(this)}>{buttonTitle}</button>
+          </SimpleWrapper>
+        </div>
+      )
+    } else {
+      return fullArray
+    }
     // } else if (this.props.format === 'table') {
     //   let headers
     //   if (this.props.schema.items.type === 'object') {

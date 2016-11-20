@@ -22,7 +22,13 @@ export class ConfineView extends React.Component {
       var types = _.assign(typeComponents, this.props.customTypes)
       return <ElementView schema={this.props.schema} value={this.props.value}
         onChange={this.change.bind(this)}
-        utils={{confine: this.props.confine, Element: ElementView, types: types}} />
+        utils={{
+          confine: this.props.confine,
+          Element: ElementView,
+          types: types,
+          extras: this.props.extras,
+          relativePath: this.props.relativePath
+        }} />
     } else {
       return <div>'Invalid Schema'</div>
     }

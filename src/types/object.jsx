@@ -1,16 +1,32 @@
 import _ from 'lodash'
 import React from 'react'
-import {ComplexWrapper} from '../other/wrappers'
+import {SimpleWrapper, ComplexWrapper} from '../other/wrappers'
 
 export default class ObjectView extends React.Component {
+  constructor () {
+    super()
+    this.state = {}
+  }
+
   onChange (propName, newChildValue) {
     const newValue = _.assign({}, this.props.value, {[propName]: newChildValue})
 
     this.props.onChange(newValue)
   }
 
+  openSheet () {
+    this.setState({sheetVisible: true})
+    this.props.utils.extras.disable()
+  }
+
+  closeSheet () {
+    this.setState({sheetVisible: false})
+    this.props.utils.extras.reenable()
+  }
+
   render () {
     var trueValue = _.isPlainObject(this.props.value) ? this.props.value : {}
+
     var propComponents = _.map(this.props.schema.properties, (schema, propName) => {
       return (
         <div className='object-property' key={propName}>
@@ -21,9 +37,44 @@ export default class ObjectView extends React.Component {
       )
     })
 
-    return (
+    if (this.props.schema.sheet) {
+      let buttonTitle = `${this.props.title}...`
+      let buttonLabel = ''
+      if (this.props.schema.buttonFormat === 'edit') {
+        buttonTitle = 'Edit...'
+        buttonLabel = this.props.title
+      }
 
-      <ComplexWrapper title={this.props.title} className='object' description={this.props.description} format={this.props.format} label={this.props.label}>
+      return (
+        <div>
+          <div className={`sheet ${this.state.sheetVisible ? 'visible' : ''}`}>
+            <div className='object-properties'>
+              {propComponents}
+            </div>
+            <button className='sheet-close-button' onClick={this.closeSheet.bind(this)}>Done</button>
+          </div>
+          <SimpleWrapper
+            buttonMode
+            utils={this.props.utils}
+            description={this.props.schema.buttonDescription}
+            className='sheet-button'
+            label={this.props.label}
+            title={buttonLabel}
+            separatorBelow={this.props.schema.separatorBelow}>
+            <button className='sheet-button' onClick={this.openSheet.bind(this)}>{buttonTitle}</button>
+          </SimpleWrapper>
+        </div>
+      )
+    }
+
+    return (
+      <ComplexWrapper
+        title={this.props.title}
+        className='object'
+        description={this.props.description}
+        format={this.props.format}
+        utils={this.props.utils}
+        label={this.props.label}>
         <div className='object-properties'>
           {propComponents}
         </div>
